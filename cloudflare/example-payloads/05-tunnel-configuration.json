@@ -1,0 +1,35 @@
+{
+  "config": {
+    "ingress": [
+      {
+        "hostname": "anime.example.com",
+        "service": "http://autobangumi:7892",
+        "originRequest": {
+          "access": {
+            "required": true,
+            "teamName": "YOUR_ZERO_TRUST_TEAM",
+            "audTag": [
+              "AUD_FROM_AUTOBANGUMI_ACCESS_APP"
+            ]
+          }
+        }
+      },
+      {
+        "hostname": "qb.example.com",
+        "service": "http://qbittorrent:8080",
+        "originRequest": {
+          "access": {
+            "required": true,
+            "teamName": "YOUR_ZERO_TRUST_TEAM",
+            "audTag": [
+              "AUD_FROM_QBITTORRENT_ACCESS_APP"
+            ]
+          }
+        }
+      },
+      {
+        "service": "http_status:404"
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability privately
+    url: https://github.com/i-am-an-op/anime-stack/security/advisories/new
+    about: Do not disclose exploitable vulnerabilities or credentials in public issues.

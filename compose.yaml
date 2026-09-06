@@ -1,0 +1,115 @@
+name: ${COMPOSE_PROJECT_NAME:-anime-stack}
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  qbittorrent:
+    image: ghcr.io/linuxserver/qbittorrent:5.2.3_v2.0.14-ls474@sha256:a00b6a597a3832a1814cde0ef60abc55c94644f3f80902c3432f6af6de8d4a96
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Etc/UTC}"
+      UMASK: "027"
+      WEBUI_PORT: "${QB_WEB_PORT:-8080}"
+      TORRENTING_PORT: "${PEER_PORT:-50888}"
+    volumes:
+      - type: bind
+        source: ${DATA_DIR:-./runtime}/state/qbittorrent
+        target: /config
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MEDIA_DIR:-./runtime/media}
+        target: /downloads
+        bind:
+          create_host_path: false
+    ports:
+      - "127.0.0.1:${QB_WEB_PORT:-8080}:${QB_WEB_PORT:-8080}/tcp"
+      - "0.0.0.0:${PEER_PORT:-50888}:${PEER_PORT:-50888}/tcp"
+      - "0.0.0.0:${PEER_PORT:-50888}:${PEER_PORT:-50888}/udp"
+    networks:
+      anime:
+        ipv4_address: ${QB_ADDRESS:-172.28.100.2}
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--output", "/dev/null", "--max-time", "4", "http://localhost:${QB_WEB_PORT:-8080}/"]
+      interval: 15s
+      timeout: 5s
+      start_period: 45s
+      retries: 5
+    restart: unless-stopped
+    stop_grace_period: 5m
+    logging: *logging
+
+  autobangumi:
+    image: ghcr.io/estrellaxd/auto_bangumi:3.3.5@sha256:2f78516ff5ac59e4bb21a0685db18dc14b72fa9ff8da7260ad6d2ef4cd1e6716
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Etc/UTC}"
+      UMASK: "027"
+    volumes:
+      - type: bind
+        source: ${DATA_DIR:-./runtime}/state/autobangumi/config
+        target: /app/config
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DATA_DIR:-./runtime}/state/autobangumi/data
+        target: /app/data
+        bind:
+          create_host_path: false
+    ports:
+      - "127.0.0.1:${AB_WEB_PORT:-7892}:7892/tcp"
+    networks:
+      anime:
+        ipv4_address: ${AB_ADDRESS:-172.28.100.3}
+    depends_on:
+      qbittorrent:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; d=json.load(urllib.request.urlopen('http://localhost:7892/health',timeout=4)); assert d['db_ok']"]
+      interval: 15s
+      timeout: 5s
+      start_period: 45s
+      retries: 5
+    restart: unless-stopped
+    stop_grace_period: 1m
+    logging: *logging
+
+  cloudflared:
+    profiles: ["cloudflare"]
+    image: cloudflare/cloudflared:2026.8.3@sha256:51c9cefcb4569df44e1ad403ab1d3d8065aa8e84339bcfc6aee75502e1140339
+    user: "${PUID:-1000}:${PGID:-1000}"
+    command: ["tunnel", "--no-autoupdate", "--metrics", "0.0.0.0:2000", "run", "--token-file", "/run/secrets/tunnel_token"]
+    secrets:
+      - tunnel_token
+    networks:
+      anime:
+        ipv4_address: ${PROXY_ADDRESS:-172.28.100.4}
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "cloudflared", "tunnel", "--metrics", "127.0.0.1:2000", "ready"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    restart: unless-stopped
+    stop_grace_period: 30s
+    logging: *logging
+
+networks:
+  anime:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${NETWORK_SUBNET:-172.28.100.0/24}
+
+secrets:
+  tunnel_token:
+    file: ${DATA_DIR:-./runtime}/secrets/cloudflared-token

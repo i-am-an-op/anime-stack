@@ -1,0 +1,9 @@
+{
+  "description": "Anime stack administration: bypass cache",
+  "expression": "(http.host in {\"anime.example.com\" \"qb.example.com\"})",
+  "action": "set_cache_settings",
+  "action_parameters": {
+    "cache": false
+  },
+  "enabled": true
+}

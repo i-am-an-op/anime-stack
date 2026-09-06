@@ -1,0 +1,7 @@
+{
+  "type": "CNAME",
+  "name": "anime.example.com",
+  "content": "TUNNEL_ID_FROM_CREATE_RESPONSE.cfargotunnel.com",
+  "proxied": true,
+  "ttl": 1
+}

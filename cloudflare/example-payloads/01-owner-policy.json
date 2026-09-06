@@ -1,0 +1,23 @@
+{
+  "name": "Anime stack owner",
+  "decision": "allow",
+  "include": [
+    {
+      "email": {
+        "email": "owner@example.com"
+      }
+    }
+  ],
+  "exclude": [],
+  "require": [],
+  "mfa_config": {
+    "mfa_disabled": false,
+    "allowed_authenticators": [
+      "security_key",
+      "biometrics",
+      "totp"
+    ],
+    "session_duration": "8h"
+  },
+  "session_duration": "8h"
+}

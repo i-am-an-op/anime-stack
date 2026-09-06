@@ -1,0 +1,33 @@
+{
+  "name": "Anime stack autobangumi",
+  "type": "self_hosted",
+  "domain": "anime.example.com",
+  "destinations": [
+    {
+      "type": "public",
+      "uri": "anime.example.com"
+    }
+  ],
+  "session_duration": "8h",
+  "app_launcher_visible": true,
+  "http_only_cookie_attribute": true,
+  "same_site_cookie_attribute": "lax",
+  "enable_binding_cookie": true,
+  "allow_authenticate_via_warp": false,
+  "options_preflight_bypass": false,
+  "mfa_config": {
+    "mfa_disabled": false,
+    "allowed_authenticators": [
+      "security_key",
+      "biometrics",
+      "totp"
+    ],
+    "session_duration": "8h"
+  },
+  "policies": [
+    {
+      "id": "POLICY_ID_FROM_CREATE_RESPONSE",
+      "precedence": 1
+    }
+  ]
+}

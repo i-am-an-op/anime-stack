@@ -1,0 +1,11 @@
+{
+  "zone": "example.com",
+  "autobangumi_hostname": "anime.example.com",
+  "qbittorrent_hostname": "qb.example.com",
+  "allowed_email": "owner@example.com",
+  "team_name": "YOUR_ZERO_TRUST_TEAM",
+  "tunnel_id": "TUNNEL_ID_FROM_CREATE_RESPONSE",
+  "policy_id": "POLICY_ID_FROM_CREATE_RESPONSE",
+  "autobangumi_aud": "AUD_FROM_AUTOBANGUMI_ACCESS_APP",
+  "qbittorrent_aud": "AUD_FROM_QBITTORRENT_ACCESS_APP"
+}

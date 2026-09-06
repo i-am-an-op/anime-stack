@@ -1,0 +1,26 @@
+name: Bug report
+description: Report a reproducible deployment or operational problem.
+body:
+  - type: markdown
+    attributes:
+      value: Do not attach credentials, runtime files or raw logs. Report vulnerabilities privately through the Security tab.
+  - type: input
+    id: release
+    attributes:
+      label: Repository release or commit
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, CPU architecture, Python/Docker/Compose versions; omit hostnames and IP addresses.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction and expected behavior
+      description: Provide minimal steps and a sanitized error summary.
+    validations:
+      required: true
